@@ -4,13 +4,13 @@ const cors = require("cors");
 app.use(cors);
 const io = require("socket.io")(httpServer, {
   cors: {
-    origin: "http://localhost:6006",
+    origin: "http://localhost:3000",
     methods: ["GET"],
   },
 });
 
 io.on("connection", (socket) => {
-  console.log("some buddy connected");
+  console.log(`somebody connected!`);
   socket.emit("testyBoi", "hey buddy");
 });
 
