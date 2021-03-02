@@ -13,7 +13,7 @@ const { generateGameCode } = require("./helpers");
 const { Game } = require("./game");
 const { serverEvents, clientEvents } = require("./constants");
 
-// ***** STATE *****
+// ***** FULL APP STATE *****
 const activeGames = {};
 
 io.on("connection", (socket) => {
@@ -26,7 +26,7 @@ io.on("connection", (socket) => {
     console.log(`initializing game with code ${gameCode}...`);
 
     socket.join(gameCode); // join room with game code (to enable room-based event emission)
-    const newGame = new Game({ socket, io }, gameCode); // init game object with code, giving it context
+    const newGame = new Game({ io }, gameCode); // init game object with code, giving it context
     newGame.addPlayer(socket, { isFounder: true }); // join game as founding player
     activeGames[gameCode] = newGame; // add Game to activeGames so it can be joined/stopped/otherwise referenced
     socket.emit(serverEvents.createGameSuccess, "testy");

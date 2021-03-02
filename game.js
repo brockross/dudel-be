@@ -2,7 +2,7 @@ const { serverEvents, clientEvents } = require("./constants");
 const { jackInToMatrix } = require("./game-logic");
 
 class Game {
-  constructor({ socket, io }, gameCode) {
+  constructor({ io }, gameCode) {
     this.gameCode = gameCode;
     this.state = {
       players: {},
@@ -21,7 +21,7 @@ class Game {
       username: "",
     };
 
-    jackInToMatrix(socket, this);
+    jackInToMatrix(socket, this); // attach all game logic event listeners to socket when they join game
 
     this.toGame(
       serverEvents.info,
