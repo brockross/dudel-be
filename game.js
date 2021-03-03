@@ -5,7 +5,7 @@ class Game {
   constructor({ io }, gameCode) {
     this.gameCode = gameCode;
     this.state = {
-      players: {},
+      players: new Map(),
     };
 
     this.toGame = function (event, data) {
@@ -15,11 +15,8 @@ class Game {
   }
 
   addPlayer(socket, opts) {
-    this.state.players[socket.id] = {
-      socket,
-      isFounder: opts?.isFounder,
-      username: "",
-    };
+    const newPlayer = { socket, isFounder: opts?.isFounder, username: "" };
+    this.state.players.set(socket.id, newPlayer);
 
     jackInToMatrix(socket, this); // attach all game logic event listeners to socket when they join game
 
