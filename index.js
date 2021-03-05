@@ -38,7 +38,7 @@ io.on("connection", (socket) => {
     if (!!gameToJoin) {
       socket.join(gameCode); // join room
       gameToJoin.addPlayer(socket);
-      cb({ success: true });
+      cb({ gameCode, success: true });
     } else {
       cb({ success: false, msg: "That room does not exist." });
     }
