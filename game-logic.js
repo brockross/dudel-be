@@ -17,6 +17,10 @@ const jackInToMatrix = (socket, Game) => {
     toGame(serverEvents.userAdded, players);
   });
 
+  socket.on(clientEvents.fetchPlayerList, (cb) => {
+    cb(getPlayerListForClient(Game));
+  });
+
   // *** GAMEPLAY ***
 };
 

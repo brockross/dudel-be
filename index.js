@@ -21,7 +21,7 @@ io.on("connection", (socket) => {
   socket.emit(serverEvents.info, "hey buddy");
 
   // ***** PRE-GAME SETUP *****
-  socket.on(clientEvents.createGame, () => {
+  socket.on(clientEvents.createGame, (cb) => {
     const gameCode = generateGameCode();
     console.log(`initializing game with code ${gameCode}...`);
 
@@ -29,17 +29,18 @@ io.on("connection", (socket) => {
     const newGame = new Game({ io }, gameCode); // init game object with code, giving it context
     newGame.addPlayer(socket, { isFounder: true }); // join game as founding player
     activeGames[gameCode] = newGame; // add Game to activeGames so it can be joined/stopped/otherwise referenced
-    socket.emit(serverEvents.createGameSuccess, "testy");
+
+    cb({ gameCode, success: true });
   });
 
-  socket.on(clientEvents.joinGame, ({ gameCode }) => {
-    console.log(`joining room with code ${gameCode}`);
-
+  socket.on(clientEvents.joinGame, (gameCode, cb) => {
     const gameToJoin = activeGames[gameCode];
     if (!!gameToJoin) {
       socket.join(gameCode); // join room
       gameToJoin.addPlayer(socket);
-      socket.emit(serverEvents.joinGameSuccess);
+      cb({ success: true });
+    } else {
+      cb({ success: false, msg: "That room does not exist." });
     }
   });
 });

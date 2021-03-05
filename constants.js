@@ -9,9 +9,11 @@ const serverEvents = {
 };
 
 // list of all events that can be sent from client to server. Comment denotes meaning of event
+// events prefixed with "fetch" constitute a REST-like interaction using socketio's Ack API--rather than using separate client/server events to emit a request and a response
 const clientEvents = {
   createGame: "create-game",
   joinGame: "join-game",
+  fetchPlayerList: "fetch-player-list", // GET list of players
   addUser: "add-user", // player in lobby added themselves to game with a username
   allReady: "all-ready", // all players have joined lobby--ready to start game
 };
