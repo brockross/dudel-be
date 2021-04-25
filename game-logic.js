@@ -21,6 +21,16 @@ const jackInToMatrix = (socket, Game) => {
     cb(getPlayerListForClient(Game));
   });
 
+  // *** GAME INIT ***
+  socket.on(clientEvents.allReady, () => {
+    // init game state:
+    // - sketchbooks
+    // - player order
+    // - # of rounds
+    // once all is set up, broadcast event to start game
+    toGame(serverEvents.gameStart);
+  });
+
   // *** GAMEPLAY ***
 };
 
