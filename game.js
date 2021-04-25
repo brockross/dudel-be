@@ -15,7 +15,12 @@ class Game {
   }
 
   addPlayer(socket, opts) {
-    const newPlayer = { socket, isFounder: opts?.isFounder, username: "" };
+    const newPlayer = {
+      socket,
+      isFounder: opts?.isFounder,
+      username: "",
+      sketchbook: [],
+    };
     this.state.players.set(socket.id, newPlayer);
 
     jackInToMatrix(socket, this); // attach all game logic event listeners to socket when they join game
