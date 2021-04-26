@@ -5,6 +5,7 @@ const serverEvents = {
   playerJoin: "player-joined", // signal to client that another player has joined lobby via a game code
   userAdded: "user-added", // signal to clients that a lobby player added themselves to the game with a username
   gameStart: "game-start", // signal to clients that the game is beginning
+  nextRound: "next-round", // all submissions have been received and the next round is starting
 };
 
 // list of all events that can be sent from client to server. Comment denotes meaning of event
@@ -16,6 +17,8 @@ const clientEvents = {
   addUser: "add-user", // player in lobby added themselves to game with a username
   allReady: "all-ready", // all players have joined lobby--ready to start game
   fetchInitialPrompt: "fetch-initial-prompt", // client has mounted the initial gameplay screen and is asking for first prompt
+  playerSubmit: "player-submit", // client is sending their doodle/guess for that round
+  fetchCurrentSubmission: "fetch-current-submission", // client has mounted new screen for next round, and is ready for "passed" sketchbook data
 };
 
 const PROMPTS_LIST = [
