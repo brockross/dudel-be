@@ -10,6 +10,7 @@ const {
   resetForNextRound,
   getHeldSketchbook,
   formatSubmission,
+  buildAllSketchbooks,
 } = require("./helpers");
 
 // examples of room-based socket server code has been really scant online. The examples I found both followed a pattern (one that I think is really dumb) where they wrote all the socket listeners inside the main io.on("connection") handler, and in EACH socket listener, they would check what room the socket is in, and direct all the handler logic at that room. It seems insane to write dozens of functions and have the first several lines of each one be "okay what is the context of this function?" The approach I'm pursuing here is to write the functions within the context to which they belong, so the association between the two is implicit.
@@ -69,11 +70,6 @@ const jackInToMatrix = (socket, Game) => {
   socket.on(clientEvents.fetchCurrentSubmission, (cb) => {
     // return the appropriate doodle/guess data for that player, based on current round & num of players & player order array
     thisPlayer.heldSketchbook = getHeldSketchbook(socket.id, state); // should return reference to another player's sketchbook based on round # offset
-    console.log(
-      `${thisPlayer.username} is holding sketchbook: ${JSON.stringify(
-        thisPlayer.heldSketchbook
-      )}`
-    );
     cb(_.last(thisPlayer.heldSketchbook));
   });
 
@@ -81,7 +77,6 @@ const jackInToMatrix = (socket, Game) => {
   socket.on(clientEvents.playerSubmit, (data) => {
     // data from client is just doodle JSON or a guess string--need to format w/author, etc.
     // push doodle/guess object into appropriate "previous" player's book
-    console.log(`${thisPlayer.username} has submitted this data: ${data}`);
     const submission = formatSubmission(data, thisPlayer, state);
     thisPlayer.heldSketchbook.push(submission); // this should be the same player determiend in "fetch-current-submission". At the start of a round, you get the last entry of a previous player's sketchbook according to round offset. During that round, your submission is pushed to the sketchbook of that same player.
 
@@ -90,17 +85,29 @@ const jackInToMatrix = (socket, Game) => {
 
     // check if round is over
     if (isFinalSubmission(state)) {
-      // i.e., check if all players' hasSubmitted prop is true
       // increment round
       state.currentRound++;
+      // check for end of game
+      if (state.currentRound > state.numOfRounds) {
+        // tell all clients to advance to game end screen, where "fetch-game-end" event will be emitted
+        toGame("start-post-game");
+        toGame(serverEvents.info, buildAllSketchbooks(state));
+        return;
+      }
+
       console.log(`moving to round ${state.currentRound}!`);
       state.roundType = state.roundType === "guess" ? "doodle" : "guess";
       // reset round-specific state like hasSubmitted props
       resetForNextRound(state);
       // notify all players
       toGame(serverEvents.nextRound, state.roundType); // even/odd round # determines doodle vs. guess round
-      // the nextRound event would trigger each client to render the opposite gameplay screen, in whose nextRound listener would be the fetch-current-submission event emit (so once again we're waiting for the client to ask for data rather than just sending it and assuming their associated listener is ready)
     }
+  });
+
+  socket.on("fetch-game-end", (cb) => {
+    // const allSketchbooks; - compile an array of all player sketchbooks. Send to all clients, where each will be displayed
+    const allSketchbooks = buildAllSketchbooks(state);
+    cb(allSketchbooks);
   });
 };
 

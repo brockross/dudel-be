@@ -81,6 +81,15 @@ const resetForNextRound = (state) => {
   state.submissionTracking = initSubmissionTracking(state.playerOrder);
 };
 
+const buildAllSketchbooks = (state) => {
+  const compiledBook = [];
+  state.playerOrder.forEach((playerId) => {
+    compiledBook.push(state.players.get(playerId).sketchbook);
+  });
+
+  return compiledBook;
+};
+
 module.exports = {
   generateGameCode,
   getPlayerListForClient,
@@ -91,4 +100,5 @@ module.exports = {
   resetForNextRound,
   getHeldSketchbook,
   formatSubmission,
+  buildAllSketchbooks,
 };
